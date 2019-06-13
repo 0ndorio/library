@@ -704,11 +704,11 @@ export class BrowserCodeReader {
 
         if (!isChecksumOrFormatError && !isNotFound) {
           // not expected
-          throw e;
+          callbackFn(null, e);
+          return;
         }
 
         // trying again
-        callbackFn(null, e);
         setTimeout(() => loop(), 0);
       }
     };
