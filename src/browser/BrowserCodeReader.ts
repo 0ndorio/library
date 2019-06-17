@@ -112,6 +112,22 @@ export class BrowserCodeReader {
     return this._hints;
   }
 
+  protected _timeBetweenDecodingTries: number = 0;
+
+  /** Time between two decoding tries in milli seconds. */
+  get timeBetweenDecodingTries(): number {
+    return this._timeBetweenDecodingTries;
+  }
+
+  /**
+   * Change the time span the decoder waits between two decoding tries.
+   *
+   * @param {number} millis Time between two decoding tries in milli seconds.
+   */
+  set timeBetweenDecodingTries(millis: number) {
+    this._timeBetweenDecodingTries = millis < 0 ? 0 : millis;
+  }
+
   /**
    * Creates an instance of BrowserCodeReader.
    * @param {Reader} reader The reader instance to decode the barcode
@@ -669,7 +685,7 @@ export class BrowserCodeReader {
 
         if (ifNotFound || ifChecksumOrFormat) {
           // trying again
-          return setTimeout(() => loop(resolve, reject), 0);
+          return setTimeout(() => loop(resolve, reject), this._timeBetweenDecodingTries);
         }
 
         reject(e);
@@ -709,7 +725,7 @@ export class BrowserCodeReader {
 
         // trying again
         callbackFn(null, e);
-        setTimeout(() => loop(), 0);
+        setTimeout(() => loop(), this._timeBetweenDecodingTries);
       }
     };
 
