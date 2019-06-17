@@ -8,9 +8,9 @@
 
   <title>ZXing TypeScript | Decoding from camera stream</title>
 
-  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/normalize.css@8.0.0/normalize.css">
-  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/milligram@1.3.0/dist/milligram.min.css">
+  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" crossorigin>
+  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/normalize.css@8.0.0/normalize.css" crossorigin>
+  <link rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/milligram@1.3.0/dist/milligram.min.css" crossorigin>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
   <main class="wrapper" style="padding-top:2em">
 
     <section class="container" id="demo-content">
-      <h1 class="title">Scan QR Code from Video Camera</h1>
+      <h1 class="title">Scan QR Code from Video Camera (Continuously)</h1>
 
       <p>
         <a class="button-small button-outline" href="../../index.html">HOME 🏡</a>
@@ -45,7 +45,7 @@
 
       <label>Result:</label>
       <blockquote>
-        <p id="result"></p>
+        <pre id="result"></pre>
       </blockquote>
 
       <p>See the <a href="https://github.com/zxing-js/library/tree/master/docs/examples/qr-camera/">source code</a> for
@@ -88,15 +88,22 @@
           }
 
           document.getElementById('startButton').addEventListener('click', () => {
-            codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video').then((result) => {
-              console.log(result)
-              document.getElementById('result').textContent = result.text
-            }).catch((err) => {
-              console.error(err)
-              document.getElementById('result').textContent = err
+            codeReader.decodeFromInputVideoDeviceContinuously(selectedDeviceId, 'video', (result, err) => {
+              if (result) {
+                // properly decoded qr code
+                console.log(result)
+                document.getElementById('result').textContent += 'Found QR Code: ' + result.text + '\n\n'
+              }
+
+              if (err) {
+                // any unexpected error
+                console.log(err)
+                document.getElementById('error').textContent += 'Stopped with an unexpected error: ' + err.text + '\n'
+              }
             })
-            console.log(`Started decode from camera with id ${selectedDeviceId}`)
           })
+
+          console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
 
           document.getElementById('resetButton').addEventListener('click', () => {
             codeReader.reset()
